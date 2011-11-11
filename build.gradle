@@ -45,8 +45,11 @@ idea {
 }
 
 uploadArchives {
-    repositories.mavenDeployer {
-        repository(url: 'file:///apps/maven')
+    repositories {
+        mavenDeployer {
+            repository(url: 'file:///apps/maven')
+            pom.artifactId = 'android-inject'
+        }
     }
 }
 
