@@ -49,7 +49,7 @@ idea {
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: 'file:///apps/maven')
+            repository(url: 'file:///maven/snapshot')
             pom.artifactId = 'android-inject'
         }
     }
