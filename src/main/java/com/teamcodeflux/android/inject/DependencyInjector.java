@@ -19,7 +19,9 @@ package com.teamcodeflux.android.inject;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.teamcodeflux.android.inject.Injects.*;
 
@@ -27,14 +29,24 @@ class DependencyInjector {
     private Object target;
 
     private List<Object> dependencies;
+    private Map<String, Object> namedDependencies;
 
-    DependencyInjector(final Object target, final List<Object> dependencies) {
+    DependencyInjector(final Object target, final List<Object> dependencies, final Map<String, Object> namedDependencies) {
         this.target = target;
         this.dependencies = new ArrayList<Object>(dependencies);
+        this.namedDependencies = new HashMap<String, Object>(namedDependencies);
     }
 
     void injectDependencies() {
         for (Field field : annotatedFields(target)) {
+            lookupAndInjectDependency(field);
+        }
+    }
+
+    private void lookupAndInjectDependency(final Field field) {
+        if (namedDependencies.containsKey(field.getName())) {
+            injectNamedDependency(field);
+        } else {
             injectDependency(field);
         }
     }
@@ -44,6 +56,14 @@ class DependencyInjector {
             if (tryAndInjectDependency(field, dependency)) {
                 break;
             }
+        }
+    }
+
+    private void injectNamedDependency(final Field field) {
+        Object dependency = namedDependencies.get(field.getName());
+
+        if (dependency != null) {
+            tryAndInjectDependency(field, dependency);
         }
     }
 
@@ -75,6 +95,3 @@ class DependencyInjector {
         return success;
     }
 }
-
-
-

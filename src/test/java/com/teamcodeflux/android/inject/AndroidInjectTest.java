@@ -1,13 +1,13 @@
 /* License added by: GRADLE-LICENSE-PLUGIN
  *
  * Copyright (C)2011 - CodeFlux, Inc <info@teamcodeflux.com>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,6 +32,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import static com.teamcodeflux.android.inject.AndroidInject.*;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 public class AndroidInjectTest {
@@ -100,6 +101,54 @@ public class AndroidInjectTest {
         InterfaceDependencyTestClass testClass = new InterfaceDependencyTestClass();
 
         assertEquals(MOCKED_DEPENDENCY, testClass.getDependency());
+    }
+
+    @Test
+    public void shouldInjectNamedDependencyBasedOnFieldName() {
+        registerNamedDependency(OneDependencyTestClass.DEPENDENCY_FIELD, DEPENDENCY);
+
+        OneDependencyTestClass testClass = new OneDependencyTestClass();
+
+        assertThat(testClass.getDependency(), is(sameInstance(DEPENDENCY)));
+    }
+
+    @Test
+    public void shouldInjectNamedDependenciesBasedOnFieldNames() {
+        registerNamedDependency(MultipleDependenciesTestClass.DEPENDENCY_FIELD, DEPENDENCY);
+        registerNamedDependency(MultipleDependenciesTestClass.OTHER_DEPENDENCY_FIELD, OTHER_DEPENDENCY);
+
+        MultipleDependenciesTestClass testClass = new MultipleDependenciesTestClass();
+
+        assertThat(testClass.getDependency(), is(sameInstance(DEPENDENCY)));
+        assertThat(testClass.getOtherDependency(), is(sameInstance(OTHER_DEPENDENCY)));
+    }
+
+    @Test
+    public void shouldNotInjectNamedDependencyIfNull() {
+        registerNamedDependency(OneDependencyTestClass.DEPENDENCY_FIELD, null);
+
+        OneDependencyTestClass testClass = new OneDependencyTestClass();
+
+        assertThat(testClass.getDependency(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldNotInjectNamedDependencyIfTypeIsDifferent() {
+        registerNamedDependency(OneDependencyTestClass.DEPENDENCY_FIELD, "Wrong Type");
+
+        OneDependencyTestClass testClass = new OneDependencyTestClass();
+
+        assertThat(testClass.getDependency(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldNotInjectDependencyWithMatchingTypeIfNamedDependencyPresentButNotValid() {
+        registerNamedDependency(OneDependencyTestClass.DEPENDENCY_FIELD, "Wrong Type");
+        registerDependency(DEPENDENCY);
+
+        OneDependencyTestClass testClass = new OneDependencyTestClass();
+
+        assertThat(testClass.getDependency(), is(nullValue()));
     }
 }
 
