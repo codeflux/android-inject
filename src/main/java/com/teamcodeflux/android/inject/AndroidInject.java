@@ -1,13 +1,13 @@
 /* License added by: GRADLE-LICENSE-PLUGIN
  *
  * Copyright (C)2011 - CodeFlux, Inc <info@teamcodeflux.com>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,17 +18,24 @@
 package com.teamcodeflux.android.inject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class AndroidInject {
     private static List<Object> dependencies = new ArrayList<Object>();
+    private static Map<String, Object> namedDependencies = new HashMap<String, Object>();
 
     public static <T> void injectDependencies(final Object target) {
-        new DependencyInjector(target, dependencies).injectDependencies();
+        new DependencyInjector(target, dependencies, namedDependencies).injectDependencies();
     }
 
     public static void registerDependency(final Object dependency) {
         dependencies.add(dependency);
+    }
+
+    public static void registerNamedDependency(final String dependencyName, final Object dependency) {
+        namedDependencies.put(dependencyName, dependency);
     }
 
     private AndroidInject() throws IllegalAccessException {

@@ -102,6 +102,54 @@ public class AndroidInjectTest {
 
         assertThat(testClass.getDependency(), is(sameInstance(MOCKED_DEPENDENCY)));
     }
+
+    @Test
+    public void shouldInjectNamedDependencyBasedOnFieldName() {
+        registerNamedDependency(OneDependencyTestClass.DEPENDENCY_FIELD, DEPENDENCY);
+
+        OneDependencyTestClass testClass = new OneDependencyTestClass();
+
+        assertThat(testClass.getDependency(), is(sameInstance(DEPENDENCY)));
+    }
+
+    @Test
+    public void shouldInjectNamedDependenciesBasedOnFieldNames() {
+        registerNamedDependency(MultipleDependenciesTestClass.DEPENDENCY_FIELD, DEPENDENCY);
+        registerNamedDependency(MultipleDependenciesTestClass.OTHER_DEPENDENCY_FIELD, OTHER_DEPENDENCY);
+
+        MultipleDependenciesTestClass testClass = new MultipleDependenciesTestClass();
+
+        assertThat(testClass.getDependency(), is(sameInstance(DEPENDENCY)));
+        assertThat(testClass.getOtherDependency(), is(sameInstance(OTHER_DEPENDENCY)));
+    }
+
+    @Test
+    public void shouldNotInjectNamedDependencyIfNull() {
+        registerNamedDependency(OneDependencyTestClass.DEPENDENCY_FIELD, null);
+
+        OneDependencyTestClass testClass = new OneDependencyTestClass();
+
+        assertThat(testClass.getDependency(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldNotInjectNamedDependencyIfTypeIsDifferent() {
+        registerNamedDependency(OneDependencyTestClass.DEPENDENCY_FIELD, "Wrong Type");
+
+        OneDependencyTestClass testClass = new OneDependencyTestClass();
+
+        assertThat(testClass.getDependency(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldNotInjectDependencyWithMatchingTypeIfNamedDependencyPresentButNotValid() {
+        registerNamedDependency(OneDependencyTestClass.DEPENDENCY_FIELD, "Wrong Type");
+        registerDependency(DEPENDENCY);
+
+        OneDependencyTestClass testClass = new OneDependencyTestClass();
+
+        assertThat(testClass.getDependency(), is(nullValue()));
+    }
 }
 
 
