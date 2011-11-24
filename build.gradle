@@ -72,4 +72,4 @@ artifacts {
 
 assemble.dependsOn clean
 
-defaultTasks 'assemble', 'license'
+defaultTasks 'assemble'
